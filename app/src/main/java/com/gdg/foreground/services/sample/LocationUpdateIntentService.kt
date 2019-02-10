@@ -30,6 +30,7 @@ class LocationUpdateIntentService : Service() {
             if (LocationResult.hasResult(intent)) {
                 val result: LocationResult = LocationResult.extractResult(intent)
                 Timber.d("lastLocation = ${result.lastLocation}, locations = ${result.locations}")
+                CloudFunctionsService.updateLocation(result.lastLocation)
 //                locationService.updateCoords(result.lastLocation.latitude, result.lastLocation.longitude)
             }
         }
