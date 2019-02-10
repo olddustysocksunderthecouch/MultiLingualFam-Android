@@ -1,0 +1,47 @@
+<?xml version="1.0" encoding="utf-8"?>
+<android.support.constraint.ConstraintLayout
+        xmlns:android="http://schemas.android.com/apk/res/android"
+        xmlns:tools="http://schemas.android.com/tools"
+        xmlns:app="http://schemas.android.com/apk/res-auto"
+        android:layout_width="match_parent"
+        android:layout_height="match_parent"
+        tools:context=".MainActivity">
+
+    <TextView
+            android:layout_width="0dp"
+            android:layout_height="wrap_content"
+            android:text="Your Reported Location:"
+            app:layout_constraintLeft_toLeftOf="parent"
+            app:layout_constraintRight_toRightOf="parent"
+            android:layout_marginTop="24dp" app:layout_constraintTop_toBottomOf="@+id/start_button"
+            android:layout_marginLeft="8dp" android:layout_marginRight="8dp" android:id="@+id/textView3"/>
+    <Button
+            android:text="Start"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:id="@+id/start_button" app:layout_constraintStart_toStartOf="parent" android:layout_marginStart="8dp"
+            app:layout_constraintEnd_toStartOf="@+id/stop_button" app:layout_constraintHorizontal_bias="0.5"
+            android:layout_marginTop="24dp" app:layout_constraintTop_toBottomOf="@+id/textView"/>
+    <Button
+            android:text="Stop"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:id="@+id/stop_button" app:layout_constraintStart_toEndOf="@+id/start_button"
+            android:layout_marginStart="8dp"
+            app:layout_constraintTop_toTopOf="@+id/start_button"/>
+    <TextView
+            android:text="Location Tracking"
+            android:layout_width="0dp"
+            android:layout_height="wrap_content"
+            android:id="@+id/textView" app:layout_constraintStart_toStartOf="parent" android:layout_marginStart="8dp"
+            app:layout_constraintEnd_toEndOf="parent" android:layout_marginEnd="8dp" android:layout_marginTop="8dp"
+            app:layout_constraintTop_toTopOf="parent" android:textSize="30sp"/>
+    <TextView
+            android:text="TextView"
+            android:layout_width="0dp"
+            android:layout_height="wrap_content"
+            android:id="@+id/textView2" app:layout_constraintStart_toStartOf="parent" android:layout_marginStart="8dp"
+            android:layout_marginTop="8dp" app:layout_constraintTop_toBottomOf="@+id/textView3"
+            app:layout_constraintEnd_toEndOf="parent" android:layout_marginEnd="8dp"/>
+
+</android.support.constraint.ConstraintLayout>
