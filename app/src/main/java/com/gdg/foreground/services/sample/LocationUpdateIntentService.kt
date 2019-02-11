@@ -9,7 +9,7 @@ import timber.log.Timber
 
 
 /**
- * Created by Adrian Bunge 12 Dec 2018
+ * Created by Adrian
  */
 class LocationUpdateIntentService : Service() {
 
@@ -31,7 +31,6 @@ class LocationUpdateIntentService : Service() {
                 val result: LocationResult = LocationResult.extractResult(intent)
                 Timber.d("lastLocation = ${result.lastLocation}, locations = ${result.locations}")
                 CloudFunctionsService.updateLocation(result.lastLocation)
-//                locationService.updateCoords(result.lastLocation.latitude, result.lastLocation.longitude)
             }
         }
 

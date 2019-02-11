@@ -5,13 +5,11 @@ import com.google.firebase.functions.FirebaseFunctions
 
 
 /**
- * Created by jhavatar on 5/4/17.
+ * Created by Adrian
  */
 object CloudFunctionsService {
 
-
     fun updateLocation(location: Location) {
-//        Timber.e("updateLocation", "called")
         // Create the arguments to the callable function.
         val data = HashMap<String, Any>()
         data["latitude"] = location.latitude

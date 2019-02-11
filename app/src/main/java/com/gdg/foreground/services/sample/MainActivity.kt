@@ -17,6 +17,9 @@ import com.google.android.gms.location.LocationServices
 import kotlinx.android.synthetic.main.activity_main.*
 import timber.log.Timber
 
+/**
+ * Created by Adrian
+ */
 class MainActivity : AppCompatActivity() {
     private var mAlertDialog: AlertDialog? = null
 
@@ -99,7 +102,7 @@ class MainActivity : AppCompatActivity() {
         when (requestCode) {
             0 -> {
                 // If request is cancelled, the result arrays are empty.
-                if (grantResults.size > 0 && grantResults[0] == PackageManager.PERMISSION_GRANTED) {
+                if (grantResults.isNotEmpty() && grantResults[0] == PackageManager.PERMISSION_GRANTED) {
                     // permission was granted, do your work....
                     startFusedLocationUpdates(googleApiClientToggleFused, locIntent)
                 } else {
