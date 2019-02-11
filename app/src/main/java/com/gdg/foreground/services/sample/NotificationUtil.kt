@@ -35,9 +35,10 @@ object NotificationUtil {
                 .setContentTitle("You're online")
                 .setContentText("Go offline to stop location tracking")
                 .setContentIntent(resultPendingIntent)
-//                .setSmallIcon(R.mipmap.ic_status_bar_notification)
-//                .setColor(ContextCompat.getColor(service, R.color.picup_blue))
-                .setPriority(-2)
+                .setSmallIcon(R.drawable.ic_notification)
+                .setColor(ContextCompat.getColor(service, R.color.colorPrimary))
+                .setPriority(PRIORITY_MIN)
+                .setShowWhen(false)
                 .setOngoing(true)
                 .build()
 
