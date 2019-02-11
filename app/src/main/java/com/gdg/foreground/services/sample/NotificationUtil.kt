@@ -32,13 +32,13 @@ object NotificationUtil {
 
         notificationManager?.let {
             val notification = NotificationCompat.Builder(service, "Driver Online")
-                .setContentTitle("You're online")
-                .setContentText("Go offline to stop location tracking")
+                .setContentTitle("We're not watching you")
+                .setContentText("This is absolutely nothing to worry about")
                 .setContentIntent(resultPendingIntent)
                 .setSmallIcon(R.drawable.ic_notification)
                 .setColor(ContextCompat.getColor(service, R.color.colorPrimary))
                 .setPriority(PRIORITY_MIN)
-                .setShowWhen(false)
+                .setShowWhen(false) // Hide the last update time
                 .setOngoing(true)
                 .build()
 
