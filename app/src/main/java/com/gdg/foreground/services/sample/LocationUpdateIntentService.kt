@@ -3,6 +3,7 @@ package com.gdg.foreground.services.sample
 import android.app.Service
 import android.content.Intent
 import android.os.IBinder
+import android.util.Log
 import com.google.android.gms.location.LocationAvailability
 import com.google.android.gms.location.LocationResult
 import timber.log.Timber
@@ -29,8 +30,9 @@ class LocationUpdateIntentService : Service() {
 
             if (LocationResult.hasResult(intent)) {
                 val result: LocationResult = LocationResult.extractResult(intent)
-                Timber.d("lastLocation = ${result.lastLocation}, locations = ${result.locations}")
+                Log.e("LocationUpdatService", "lastLocation = ${result.lastLocation}, locations = ${result.locations}")
                 CloudFunctionsService.updateLocation(result.lastLocation)
+
             }
         }
 

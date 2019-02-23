@@ -1,7 +1,9 @@
 package com.gdg.foreground.services.sample
 
 import android.location.Location
+import android.util.Log
 import com.google.firebase.functions.FirebaseFunctions
+import timber.log.Timber
 
 
 /**
@@ -10,7 +12,8 @@ import com.google.firebase.functions.FirebaseFunctions
 object CloudFunctionsService {
 
     fun updateLocation(location: Location) {
-        // Create the arguments to the callable function.
+
+Log.e("updateLocation", location.toString())        // Create the arguments to the callable function.
         val data = HashMap<String, Any>()
         data["latitude"] = location.latitude
         data["longitude"] = location.longitude
