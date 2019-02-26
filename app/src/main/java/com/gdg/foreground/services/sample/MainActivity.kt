@@ -11,9 +11,11 @@ import android.support.v4.app.ActivityCompat
 import android.support.v4.content.ContextCompat
 import android.support.v7.app.AlertDialog
 import android.support.v7.app.AppCompatActivity
+import com.gdg.foreground.services.sample.CloudFunctionsService.addToken
 import com.google.android.gms.location.FusedLocationProviderClient
 import com.google.android.gms.location.LocationRequest
 import com.google.android.gms.location.LocationServices
+import com.google.firebase.auth.FirebaseAuth
 import com.google.firebase.database.DataSnapshot
 import com.google.firebase.database.DatabaseError
 import com.google.firebase.database.ValueEventListener
@@ -32,6 +34,8 @@ class MainActivity : AppCompatActivity() {
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
         setContentView(R.layout.activity_main)
+
+        val uid = FirebaseAuth.getInstance().currentUser?.uid ?: ""
         addToken()
 
         start_button.setOnClickListener {
@@ -44,15 +48,12 @@ class MainActivity : AppCompatActivity() {
             applicationContext.stopService(intent)
         }
         val mRef = FirebaseUtil.database.reference
-        val mBalanceRef = mRef.child("driver-locations").child("1234")
-        mBalanceRef.addValueEventListener(object : ValueEventListener {
+        val mUserLocationRef = mRef.child("user-locations").child(uid)
+        mUserLocationRef.addValueEventListener(object : ValueEventListener {
             override fun onDataChange(dataSnapshot: DataSnapshot) {
-
-
                 val location = dataSnapshot.getValue(CurrentLocationModel::class.java)
-
-                    val locationText = "Lat: ${location?.latitude} Long: ${location?.longitude}"
-                    current_location_textview.text = locationText
+                val locationText = "Lat: ${location?.latitude} Long: ${location?.longitude}"
+                current_location_textview.text = locationText
 
             }
 
@@ -61,7 +62,6 @@ class MainActivity : AppCompatActivity() {
 
 
     }
-
 
 
     private val googleApiClientToggleFused: FusedLocationProviderClient by lazy {
@@ -80,6 +80,7 @@ class MainActivity : AppCompatActivity() {
             locReq.priority = LocationRequest.PRIORITY_HIGH_ACCURACY
             locReq.interval = 5000L // milli seconds
             locReq.fastestInterval = 2000L
+            locReq.interval = 2000L
 //            locReq.smallestDisplacement = 100.0f // meters
 
             return locReq
@@ -94,7 +95,7 @@ class MainActivity : AppCompatActivity() {
         fusedLocationClient.removeLocationUpdates(locIntent)
     }
 
-    private fun permissionCheckAndStartServiceIfGranted(){
+    private fun permissionCheckAndStartServiceIfGranted() {
         if (ContextCompat.checkSelfPermission(this, ACCESS_FINE_LOCATION) != PackageManager.PERMISSION_GRANTED) {
             // Permission is not granted
             // Should we show an explanation?
@@ -106,7 +107,8 @@ class MainActivity : AppCompatActivity() {
                     DialogInterface.OnClickListener { _, _ ->
                         ActivityCompat.requestPermissions(this, arrayOf(ACCESS_FINE_LOCATION), LOCATION_REQUEST_CODE)
                     },
-                    null)
+                    null
+                )
 
             } else {
                 // No explanation needed, we can request the permission.
@@ -140,8 +142,10 @@ class MainActivity : AppCompatActivity() {
         }
     }
 
-    private fun showAlertDialog(onPositiveButtonClickListener: DialogInterface.OnClickListener?,
-                                onNegativeButtonClickListener: DialogInterface.OnClickListener?) {
+    private fun showAlertDialog(
+        onPositiveButtonClickListener: DialogInterface.OnClickListener?,
+        onNegativeButtonClickListener: DialogInterface.OnClickListener?
+    ) {
         val builder = AlertDialog.Builder(this)
         builder.setTitle("Can we track you, maybe?")
         builder.setMessage("So this is awkward but we want to watch your every move...")
