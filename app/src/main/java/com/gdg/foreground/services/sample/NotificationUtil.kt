@@ -7,7 +7,7 @@ import android.content.Context
 import android.content.Intent
 import android.os.Build
 import android.support.v4.app.NotificationCompat
-import android.support.v4.app.NotificationCompat.PRIORITY_MIN
+import android.support.v4.app.NotificationCompat.*
 import android.support.v4.content.ContextCompat
 
 /**
@@ -19,6 +19,11 @@ object NotificationUtil {
 
         NotificationCompat.Builder(service, "Driver Online")
         val notificationManager: NotificationManager? = service.getSystemService(Context.NOTIFICATION_SERVICE) as NotificationManager
+
+        if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.O) {
+            val notificationChannel = NotificationChannel("Driver Online", "You are online", NotificationManager.IMPORTANCE_LOW)
+            notificationManager?.createNotificationChannel(notificationChannel)
+        }
 
         val resultIntent = Intent(service, MainActivity::class.java)
 
@@ -32,12 +37,12 @@ object NotificationUtil {
 
         notificationManager?.let {
             val notification = NotificationCompat.Builder(service, "Driver Online")
-                .setContentTitle("We're not watching you")
-                .setContentText("This is absolutely nothing to worry about")
+                .setContentTitle("This isn't suspicious at all")
+                .setContentText("You have absolutely nothing to worry about")
                 .setContentIntent(resultPendingIntent)
                 .setSmallIcon(R.drawable.ic_notification)
                 .setColor(ContextCompat.getColor(service, R.color.colorPrimary))
-                .setPriority(PRIORITY_MIN)
+                .setPriority(PRIORITY_LOW) // Equal to or greater than or the system will call out the app's behavior in the notification drawer's bottom section.
                 .setShowWhen(false) // Hide the last update time
                 .setOngoing(true)
                 .build()
@@ -46,9 +51,6 @@ object NotificationUtil {
         } ?: service.stopSelf()
 
 
-        if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.O) {
-            val notificationChannel = NotificationChannel("Driver Online", "You are online", NotificationManager.IMPORTANCE_LOW)
-            notificationManager?.createNotificationChannel(notificationChannel)
-        }
+
     }
 }
