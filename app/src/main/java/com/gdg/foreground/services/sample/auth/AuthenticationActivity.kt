@@ -22,15 +22,11 @@ import java.util.*
 
 class AuthenticationActivity : BaseActivity() {
 
-    // [START declare_auth]
     private var mAuth: FirebaseAuth? = null
-    // [END declare_auth]
 
     public override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
         setContentView(R.layout.activity_authentication)
-
-
 
         var isNewRegistration = false
 
@@ -105,12 +101,8 @@ class AuthenticationActivity : BaseActivity() {
                 .setDisplayName(name)
                 .build()
 
-        user.updateProfile(profileUpdates)
-                .addOnCompleteListener(OnCompleteListener<Void> { task ->
-                    if (task.isSuccessful) {
-                        Log.d(TAG, "User name updated")
-                    }
-                })
+//        user.updateProfile(profileUpdates)
+//                .addOnCompleteListener()
     }
 
     private fun createUserAccount(uid: String, name: String) {
@@ -125,7 +117,7 @@ class AuthenticationActivity : BaseActivity() {
                 .getHttpsCallable("createAccount")
                 .call(data)
                 .continueWith { task ->
-                    task.result.data as String
+                    task.result?.data as String
                 }
     }
 
