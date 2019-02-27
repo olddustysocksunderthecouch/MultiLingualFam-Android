@@ -10,7 +10,7 @@ import com.google.firebase.iid.FirebaseInstanceId
 /**
  * Created by Adrian
  */
-object CloudFunctionsService {
+object CloudFunctions {
 
     fun updateLocation(location: Location) {
 

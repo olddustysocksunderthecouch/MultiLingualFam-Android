@@ -1,4 +1,4 @@
-package com.gdg.foreground.services.sample
+package com.gdg.foreground.services.sample.services
 
 import android.app.NotificationChannel
 import android.app.NotificationManager
@@ -9,6 +9,8 @@ import android.media.RingtoneManager
 import android.os.Build
 import android.support.v4.app.NotificationCompat
 import android.util.Log
+import com.gdg.foreground.services.sample.MainActivity
+import com.gdg.foreground.services.sample.R
 import com.google.firebase.messaging.FirebaseMessagingService
 import com.google.firebase.messaging.RemoteMessage
 

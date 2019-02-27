@@ -9,6 +9,7 @@ import android.os.Build
 import android.support.v4.app.NotificationCompat
 import android.support.v4.app.NotificationCompat.*
 import android.support.v4.content.ContextCompat
+import com.gdg.foreground.services.sample.services.LocationUpdateIntentService
 
 /**
  * Created by Adrian

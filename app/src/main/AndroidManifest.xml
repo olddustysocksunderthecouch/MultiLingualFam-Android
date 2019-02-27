@@ -25,10 +25,10 @@
         <activity android:name=".auth.AuthenticationActivity" />
         <activity android:name=".MainActivity" />
 
-        <service android:name=".LocationUpdateIntentService"
+        <service android:name=".services.LocationUpdateIntentService"
                  android:enabled="true"/>
 
-        <service android:name=".CloudMessagingService">
+        <service android:name=".services.CloudMessagingService">
             <intent-filter>
                 <action android:name="com.google.firebase.MESSAGING_EVENT" />
             </intent-filter>

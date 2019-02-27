@@ -11,7 +11,9 @@ import android.support.v4.app.ActivityCompat
 import android.support.v4.content.ContextCompat
 import android.support.v7.app.AlertDialog
 import android.support.v7.app.AppCompatActivity
-import com.gdg.foreground.services.sample.CloudFunctionsService.addToken
+import com.gdg.foreground.services.sample.CloudFunctions.addToken
+import com.gdg.foreground.services.sample.models.CurrentLocationModel
+import com.gdg.foreground.services.sample.services.LocationUpdateIntentService
 import com.google.android.gms.location.FusedLocationProviderClient
 import com.google.android.gms.location.LocationRequest
 import com.google.android.gms.location.LocationServices
@@ -39,26 +41,29 @@ class MainActivity : AppCompatActivity() {
         addToken()
 
         start_button.setOnClickListener {
-            permissionCheckAndStartServiceIfGranted()
-        }
+                    if(permissionCheckAndStartServiceIfGranted()){
+                         startFusedLocationUpdates(googleApiClientToggleFused, locationServicePendingIntent)
+                    }
+                }
 
-        stop_button.setOnClickListener {
-            stopFusedLocationUpdates(googleApiClientToggleFused, locIntent)
-            val intent = Intent(applicationContext, LocationUpdateIntentService::class.java)
-            applicationContext.stopService(intent)
-        }
+                stop_button.setOnClickListener {
+                    stopFusedLocationUpdates(googleApiClientToggleFused, locationServicePendingIntent)
+                    val intent = Intent(this, LocationUpdateIntentService::class.java)
+                    this.stopService(intent)
+                }
+
         val mRef = FirebaseUtil.database.reference
-        val mUserLocationRef = mRef.child("user-locations").child(uid)
-        mUserLocationRef.addValueEventListener(object : ValueEventListener {
-            override fun onDataChange(dataSnapshot: DataSnapshot) {
-                val location = dataSnapshot.getValue(CurrentLocationModel::class.java)
-                val locationText = "Lat: ${location?.latitude} Long: ${location?.longitude}"
-                current_location_textview.text = locationText
+                val mUserLocationRef = mRef.child("user-locations").child(uid)
+                mUserLocationRef.addValueEventListener(object : ValueEventListener {
+                    override fun onDataChange(dataSnapshot: DataSnapshot) {
+                        val location = dataSnapshot.getValue(CurrentLocationModel::class.java)
+                        val locationText = "Lat: ${location?.latitude} Long: ${location?.longitude}"
+                        current_location_textview.text = locationText
 
-            }
+                    }
 
-            override fun onCancelled(databaseError: DatabaseError) {}
-        })
+                    override fun onCancelled(databaseError: DatabaseError) {}
+                })
 
 
     }
@@ -68,89 +73,94 @@ class MainActivity : AppCompatActivity() {
         LocationServices.getFusedLocationProviderClient(this)
     }
 
-    private val locIntent: PendingIntent by lazy {
-        Timber.e("Intent starting Location Service: locIntent")
-        val intent = Intent(applicationContext, LocationUpdateIntentService::class.java)
-        PendingIntent.getService(applicationContext, LOCATION_REQUEST_CODE, intent, PendingIntent.FLAG_UPDATE_CURRENT)
+    private val locationServicePendingIntent: PendingIntent by lazy {
+        Timber.e("Intent starting Location Service: locationServiceIntent")
+        val intent = Intent(this, LocationUpdateIntentService::class.java)
+        PendingIntent.getService(this, LOCATION_REQUEST_CODE, intent, PendingIntent.FLAG_UPDATE_CURRENT)
     }
 
     private val locationRequest: LocationRequest
         get() {
-            val locReq = LocationRequest()
-            locReq.priority = LocationRequest.PRIORITY_HIGH_ACCURACY
-            locReq.interval = 5000L // milli seconds
-            locReq.fastestInterval = 2000L
-            locReq.interval = 2000L
+            val locationRequest = LocationRequest()
+            locationRequest.priority = LocationRequest.PRIORITY_HIGH_ACCURACY
+            locationRequest.interval = 5000L // milli seconds
+            locationRequest.fastestInterval = 2000L
+            locationRequest.interval = 2000L
 //            locReq.smallestDisplacement = 100.0f // meters
 
-            return locReq
+            return locationRequest
         }
 
     @SuppressLint("MissingPermission")
-    private fun startFusedLocationUpdates(fusedLocationClient: FusedLocationProviderClient, locIntent: PendingIntent) {
-        fusedLocationClient.requestLocationUpdates(locationRequest, locIntent)
+    private fun startFusedLocationUpdates(fusedLocationClient: FusedLocationProviderClient, locationServicePendingIntent: PendingIntent) {
+        fusedLocationClient.requestLocationUpdates(locationRequest, locationServicePendingIntent)
     }
 
-    private fun stopFusedLocationUpdates(fusedLocationClient: FusedLocationProviderClient, locIntent: PendingIntent) {
-        fusedLocationClient.removeLocationUpdates(locIntent)
+    private fun stopFusedLocationUpdates(fusedLocationClient: FusedLocationProviderClient, locationServicePendingIntent: PendingIntent) {
+        fusedLocationClient.removeLocationUpdates(locationServicePendingIntent)
     }
 
-    private fun permissionCheckAndStartServiceIfGranted() {
-        if (ContextCompat.checkSelfPermission(this, ACCESS_FINE_LOCATION) != PackageManager.PERMISSION_GRANTED) {
-            // Permission is not granted
-            // Should we show an explanation?
-            if (ActivityCompat.shouldShowRequestPermissionRationale(this, ACCESS_FINE_LOCATION)) {
-                // Show an explanation to the user *asynchronously* -- don't block
-                // this thread waiting for the user's response! After the user
-                // sees the explanation, try again to request the permission.
-                showAlertDialog(
-                    DialogInterface.OnClickListener { _, _ ->
-                        ActivityCompat.requestPermissions(this, arrayOf(ACCESS_FINE_LOCATION), LOCATION_REQUEST_CODE)
-                    },
-                    null
-                )
+
+        private fun permissionCheckAndStartServiceIfGranted(): Boolean {
+            if (ContextCompat.checkSelfPermission(this, ACCESS_FINE_LOCATION) != PackageManager.PERMISSION_GRANTED) {
+                // Permission is not granted
+                // Should we show an explanation?
+                if (ActivityCompat.shouldShowRequestPermissionRationale(this, ACCESS_FINE_LOCATION)) {
+                    // Show an explanation to the user *asynchronously* -- don't block
+                    // this thread waiting for the user's response! After the user
+                    // sees the explanation, try again to request the permission.
+                    showAlertDialog(
+                        DialogInterface.OnClickListener { _, _ ->
+                            ActivityCompat.requestPermissions(this, arrayOf(ACCESS_FINE_LOCATION), LOCATION_REQUEST_CODE)
+                        },
+                        null
+                    )
+
+                } else {
+                    // Run if the permission wasn't denied on a previous occasion
+                    // So no explanation needed, we can request the permission.
+                    ActivityCompat.requestPermissions(this, arrayOf(ACCESS_FINE_LOCATION), LOCATION_REQUEST_CODE)
+
+                    // LOCATION_REQUEST_CODE is an
+                    // app-defined int constant. The callback method gets the
+                    // result of the request.
+                }
+
+                return false
 
             } else {
-                // No explanation needed, we can request the permission.
-                ActivityCompat.requestPermissions(this, arrayOf(ACCESS_FINE_LOCATION), LOCATION_REQUEST_CODE)
-
-                // MY_PERMISSIONS_REQUEST_READ_CONTACTS is an
-                // app-defined int constant. The callback method gets the
-                // result of the request.
+                // Permission has already been granted
+                return true
             }
-        } else {
-            // Permission has already been granted
-            startFusedLocationUpdates(googleApiClientToggleFused, locIntent)
-
         }
-    }
 
-    override fun onRequestPermissionsResult(requestCode: Int, permissions: Array<String>, grantResults: IntArray) {
-        when (requestCode) {
-            0 -> {
-                // If request is cancelled, the result arrays are empty.
-                if (grantResults.isNotEmpty() && grantResults[0] == PackageManager.PERMISSION_GRANTED) {
-                    // permission was granted, do your work....
-                    startFusedLocationUpdates(googleApiClientToggleFused, locIntent)
-                } else {
-                    // Permission denied
-                    // Disable the functionality that depends on this permission.
+        override fun onRequestPermissionsResult(requestCode: Int, permissions: Array<String>, grantResults: IntArray) {
+            when (requestCode) {
+                0 -> {
+                    // If request is cancelled, the result arrays are empty.
+                    if (grantResults.isNotEmpty() && grantResults[0] == PackageManager.PERMISSION_GRANTED) {
+                        // permission was granted, do your work....
+                        startFusedLocationUpdates(googleApiClientToggleFused, locationServicePendingIntent)
+                    } else {
+                        // Permission denied
+                        // Disable the functionality that depends on this permission.
+                    }
+                    return
                 }
-                return
+                // other 'case' statements for other permissions
             }
-            // other 'case' statements for other permissions
         }
-    }
 
-    private fun showAlertDialog(
-        onPositiveButtonClickListener: DialogInterface.OnClickListener?,
-        onNegativeButtonClickListener: DialogInterface.OnClickListener?
-    ) {
-        val builder = AlertDialog.Builder(this)
-        builder.setTitle("Can we track you, maybe?")
-        builder.setMessage("So this is awkward but we want to watch your every move...")
-        builder.setPositiveButton("SURE", onPositiveButtonClickListener)
-        builder.setNegativeButton("PERHAPS LATER", onNegativeButtonClickListener)
-        mAlertDialog = builder.show()
-    }
+        private fun showAlertDialog(
+            onPositiveButtonClickListener: DialogInterface.OnClickListener?,
+            onNegativeButtonClickListener: DialogInterface.OnClickListener?
+        ) {
+            val builder = AlertDialog.Builder(this)
+            builder.setTitle("Can we track you, maybe?")
+            builder.setMessage("So this is awkward but we want to watch your every move...")
+            builder.setPositiveButton("SURE", onPositiveButtonClickListener)
+            builder.setNegativeButton("PERHAPS LATER", onNegativeButtonClickListener)
+            mAlertDialog = builder.show()
+        }
+
 }
